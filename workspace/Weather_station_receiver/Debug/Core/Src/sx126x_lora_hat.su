@@ -1,4 +1,0 @@
-../Core/Src/sx126x_lora_hat.c:103:6:cfg_sx126x_io	16	static
-../Core/Src/sx126x_lora_hat.c:124:9:cfg_sx126x_mode	24	static
-../Core/Src/sx126x_lora_hat.c:161:9:sx126x_write_register	32	static
-../Core/Src/sx126x_lora_hat.c:182:9:sx126x_send	16	static

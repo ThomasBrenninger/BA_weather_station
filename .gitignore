@@ -7,13 +7,13 @@
 /workspace/.metadata
 /workspace/Archiv
 /workspace/Communication_test_SX1262_receiver
-/workspace/Communication_test_SX1262_receiver/Debug
 /workspace/Communication_test_SX1262_sender
-/workspace/Communication_test_SX1262_sender/Debug
 /workspace/LCD_test
 /workspace/receiver
 /workspace/weather_station
 /workspace/Communication_test_SX1262_receiver.zip
+#ignore alle Debug files in the projects
+/workspace/**/Debug
 
 # Object files
 *.o
