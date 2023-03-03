@@ -12,8 +12,9 @@
 /workspace/receiver
 /workspace/weather_station
 /workspace/Communication_test_SX1262_receiver.zip
-#ignore alle Debug files in the projects
+#exclude all Debug folders in workspacefolder
 /workspace/**/Debug
+/schriftstueck/~$chelorarbeit_Brenninger.docx
 
 # Object files
 *.o
