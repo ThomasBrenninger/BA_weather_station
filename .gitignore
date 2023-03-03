@@ -1,0 +1,61 @@
+#Private specific folder structure ignores
+/Debug/
+/01_General_documents
+/02_Programs
+/03_KiCad
+/04_Modules
+/05_Doku
+/workspace/.metadata
+/workspace/Archiv
+/workspace/Communication_test_SX1262_receiver
+/workspace/Communication_test_SX1262_sender
+/workspace/LCD_test
+/workspace/receiver
+/workspace/weather_station
+/workspace/Communication_test_SX1262_receiver.zip
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Misc
+*.map
+*.m
+*.png
+
+# Eclipse CDT project files
+.cproject
+.project
+.settings/
+
+# Vagrant directory
+.vagrant/
+
+# Include makefiles
+!Makefile
+*~
+
+# Libraries
+/lib
