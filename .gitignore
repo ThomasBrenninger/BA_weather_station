@@ -1,5 +1,4 @@
 #Private specific folder structure ignores
-/Debug/
 /01_General_documents
 /02_Programs
 /03_KiCad
@@ -8,7 +7,9 @@
 /workspace/.metadata
 /workspace/Archiv
 /workspace/Communication_test_SX1262_receiver
+/workspace/Communication_test_SX1262_receiver/Debug
 /workspace/Communication_test_SX1262_sender
+/workspace/Communication_test_SX1262_sender/Debug
 /workspace/LCD_test
 /workspace/receiver
 /workspace/weather_station

@@ -132,7 +132,7 @@ int main(void)
 	{
 		char message[50]={'\0'};
 		char large_test_message[900]="A";
-		large_test_message[]='\0';
+		large_test_message[899]='\0';
 		//COPIED FROM BEYOND COMPARE BEGIN
 		HAL_StatusTypeDef ret= HAL_ERROR;
 		uint8_t buf[12] = {0};
