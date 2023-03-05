@@ -38,6 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MAX_ARRAY_SIZE 400
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,10 +58,12 @@ uint8_t init_cplt_flag = ERROR;
 uint8_t over_flag = ERROR;
 uint8_t rece_buff;
 uint8_t rece_count = 3;
-uint8_t buffer[100]="\0";
+//uint8_t buffer[100]="\0";
+uint8_t buffer[MAX_ARRAY_SIZE]={"\0"};
 bool transmitted = false;
 bool received = false;
 bool loop_while = false;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -132,7 +135,8 @@ int main(void)
 		HAL_Delay(500);
 	}
 	HAL_Delay(100);
-	HAL_UART_Receive_IT(&huart1,(uint8_t *)&buffer,9);
+	//HAL_UART_Receive_IT(&huart1,(uint8_t *)&buffer,9);
+	HAL_UART_Receive_IT(&huart1,(uint8_t *)&buffer,MAX_ARRAY_SIZE-1);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -157,7 +161,9 @@ int main(void)
 			ST7735_WriteString(2, 2+(4*18), (char*)built_message, Font_11x18, ST7735_RED, ST7735_YELLOW);
 			HAL_UART_Transmit(&huart2,buffer,strlen((const char *)buffer),HAL_MAX_DELAY);
 			//ST7735_WriteString(2, 2+(1*18), (char*)buffer, Font_11x18, ST7735_RED, ST7735_YELLOW);
-			HAL_UART_Receive_IT(&huart1,(uint8_t *)&buffer,9);
+			//HAL_UART_Receive_IT(&huart1,(uint8_t *)&buffer,9);
+			HAL_UART_Receive_IT(&huart1,(uint8_t *)&buffer,MAX_ARRAY_SIZE-1);
+
 			received = false;
 		}
 		if(SUCCESS == over_flag){
@@ -389,15 +395,17 @@ static void MX_GPIO_Init(void)
  */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-	transmitted = true;
-	/*bool flg_huart1_completed= false;
-	bool flg_huart2_completed = false;
 	if(huart == &huart1){
-		flg_huart1_completed = true;
+		transmitted = true;
+		/*bool flg_huart1_completed= false;
+		bool flg_huart2_completed = false;
+		if(huart == &huart1){
+			flg_huart1_completed = true;
+		}
+		else{
+			flg_huart2_completed = false;
+		}*/
 	}
-	else{
-		flg_huart2_completed = false;
-	}*/
 }
 
 
