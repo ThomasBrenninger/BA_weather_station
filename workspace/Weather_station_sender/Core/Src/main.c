@@ -37,6 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MAX_ARRAY_SIZE 90
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -72,6 +73,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
+uint16_t read_TH02(uint8_t command);
 
 /* USER CODE END PFP */
 
@@ -131,18 +133,17 @@ int main(void)
 	while (1)
 	{
 		char message[50]={'\0'};
-		char large_test_message[900]="A";
-		large_test_message[899]='\0';
+		char large_test_message[MAX_ARRAY_SIZE];
+		memset(large_test_message, 'A', sizeof(large_test_message));
+		large_test_message[MAX_ARRAY_SIZE-1]='\0';
 		//COPIED FROM BEYOND COMPARE BEGIN
 		HAL_StatusTypeDef ret= HAL_ERROR;
-		uint8_t buf[12] = {0};
-		uint16_t temp_val = 0;
 		uint16_t calculated_temperature = 0;
 		uint16_t calculated_humidity = 0;
 
 		if((ret=HAL_I2C_IsDeviceReady(&hi2c1, TH02_ADDR , 1, 2))!= HAL_OK){
 			flg_I2C_available = false;
-			char error[]="TH02 SENSOR NOT FOUND\n\r";
+			char error[]="TH02 SENSOR NOT FOUND\r\n";
 			HAL_UART_Transmit(&huart2, (uint8_t *)&error,strlen(error),HAL_MAX_DELAY);
 		}
 		else{
@@ -150,50 +151,24 @@ int main(void)
 		}
 
 		if(flg_I2C_available){
-			//Config TH02 to measure temperature
-			ret= HAL_I2C_Mem_Write(&hi2c1, TH02_ADDR, 0x03, I2C_MEMADD_SIZE_8BIT, &COMMAND_READ_TEMPERATURE, 1, HAL_MAX_DELAY);
-			HAL_Delay(500);
-			//Read config register to check for correct config for temperature measurements
-			ret = HAL_I2C_Mem_Read(&hi2c1, TH02_ADDR, 0x03, I2C_MEMADD_SIZE_8BIT, buf, 1, HAL_MAX_DELAY);
-			//Read high and low byte
-			ret = HAL_I2C_Mem_Read(&hi2c1, TH02_ADDR, 0x01, I2C_MEMADD_SIZE_8BIT, buf, 2, HAL_MAX_DELAY);
 
-			//Calculate measured temperature
-			temp_val  = (buf[0]<<8);
-			temp_val |= buf[1];
-			temp_val = temp_val >> 2;
-			calculated_temperature = (temp_val/32) - 50;
+			calculated_temperature = read_TH02(COMMAND_READ_TEMPERATURE);
+			calculated_humidity = read_TH02(COMMAND_READ_HUMIDITY);
 
-			//Config TH02 to measure humidity
-			ret= HAL_I2C_Mem_Write(&hi2c1, TH02_ADDR, 0x03, I2C_MEMADD_SIZE_8BIT, &COMMAND_READ_HUMIDITY, 1, HAL_MAX_DELAY);
-			HAL_Delay(500);
-
-			//Read config register to check for correct config for humidity measurements
-			ret = HAL_I2C_Mem_Read(&hi2c1, TH02_ADDR, 0x03, I2C_MEMADD_SIZE_8BIT, buf, 1, HAL_MAX_DELAY);
-			//Read high and low byte
-			ret = HAL_I2C_Mem_Read(&hi2c1, TH02_ADDR, 0x01, I2C_MEMADD_SIZE_8BIT, buf, 2, HAL_MAX_DELAY);
-
-			//Calculate measured humidity
-			temp_val  = (buf[0]<<8);
-			temp_val |= buf[1];
-			temp_val = temp_val >> 4;
-			calculated_humidity = (temp_val/16) - 24;
 
 			//Build status message and print it on connected terminal
 
-
-
 			//sprintf(message,"Temp: %d°C\n\rHum: %d%%\n\n\r",calculated_temperature,calculated_humidity);
-			sprintf(message,"%3d|%3d\n\r",calculated_temperature,calculated_humidity);
-			//sprintf(message1,"%3d|%3d\n\r",calculated_temperature,calculated_humidity);
+			sprintf(message,"%3d|%3d\r\n",calculated_temperature,calculated_humidity);
+			//sprintf(message1,"%3d|%3d\r\n",calculated_temperature,calculated_humidity);
 			HAL_UART_Transmit(&huart2, (uint8_t *)&message,strlen(message),HAL_MAX_DELAY);
 		}
 
 		//HAL_UART_Transmit_IT(&huart1,(uint8_t *)&message,strlen((const char *)message));
 
 		/*BEGIN CURRENT MEASUREMENT*/
-		//HAL_UART_Transmit_IT(&huart1,(uint8_t *)&message,strlen((const char *)message));
-		HAL_UART_Transmit_IT(&huart1,(uint8_t *)&large_test_message,strlen((const char *)large_test_message));
+		HAL_UART_Transmit_IT(&huart1,(uint8_t *)&message,strlen((const char *)message));
+		//HAL_UART_Transmit_IT(&huart1,(uint8_t *)&large_test_message,strlen((const char *)large_test_message));
 		/*END CURRENT MEASUREMENT*/
 		if(SUCCESS == over_flag){
 			HAL_UART_Transmit_IT(&huart2,buffer,strlen((const char *)buffer));
@@ -426,6 +401,36 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+uint16_t read_TH02(uint8_t command){
+
+	uint8_t buf[12] = {0};
+	uint16_t temp_val = 0;
+
+	uint16_t calculated=0;
+	//Config TH02 to measure
+	HAL_I2C_Mem_Write(&hi2c1, TH02_ADDR, 0x03, I2C_MEMADD_SIZE_8BIT, &command, 1, HAL_MAX_DELAY);
+	HAL_Delay(500);
+	//Read config register to check for correct config for measurements
+	HAL_I2C_Mem_Read(&hi2c1, TH02_ADDR, 0x03, I2C_MEMADD_SIZE_8BIT, buf, 1, HAL_MAX_DELAY);
+	//Read high and low byte
+	HAL_I2C_Mem_Read(&hi2c1, TH02_ADDR, 0x01, I2C_MEMADD_SIZE_8BIT, buf, 2, HAL_MAX_DELAY);
+
+	//calculate temperature
+	if(command == 0x11){
+		temp_val  = (buf[0]<<8);
+		temp_val |= buf[1];
+		temp_val = temp_val >> 2;
+		calculated = (temp_val/32) - 50;
+	}
+	//calculate humidity
+	else {
+		temp_val  = (buf[0]<<8);
+		temp_val |= buf[1];
+		temp_val = temp_val >> 4;
+		calculated = (temp_val/16) - 24;
+	}
+	return calculated;
+}
 
 /**
  * @brief Tx Transfer completed callback.
